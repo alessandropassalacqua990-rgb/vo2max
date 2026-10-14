@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calcolatore VO2 max · SUPER-ALE</title>
+<meta name="description" content="Stima il tuo VO2 max in due minuti, senza test in laboratorio, con un modello validato su più di 4.000 adulti.">
+<meta property="og:title" content="Calcola il tuo VO2 max · SUPER-ALE">
+<meta property="og:description" content="Una stima seria del tuo VO2 max, con i dati che hai già.">
+<meta property="og:image" content="img/ale.jpg">
+<link rel="icon" href="img/icona_bs.png">
+<style>
+@font-face{font-family:"Montserrat";font-weight:900;src:url(font/Montserrat-900-normal.ttf) format("truetype");font-display:swap}
+@font-face{font-family:"Newsreader";font-weight:400;src:url(font/Newsreader-400-normal.ttf) format("truetype");font-display:swap}
+@font-face{font-family:"Newsreader";font-weight:600;src:url(font/Newsreader-600-normal.ttf) format("truetype");font-display:swap}
+:root{--bg:#050A18;--panel:#0B1430;--panel2:#101C40;--line:rgba(255,255,255,.12);--text:#FFFFFF;--soft:#C9D2E6;--muted:#8793B0;--accent:#9FB6EA;--rouge:#9E1B2B;--ink:#00225A}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:"Newsreader",Georgia,serif;font-size:18px;line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:90px}
+a{color:inherit}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+.h{font-family:"Montserrat",Arial,sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.05;text-transform:lowercase}
+.kick{font-weight:600;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--accent)}
+b{font-weight:600;color:#fff}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;background:var(--rouge);color:#fff;text-decoration:none;font-family:"Montserrat",Arial,sans-serif;font-weight:900;font-size:14px;letter-spacing:.04em;padding:16px 26px;border-radius:999px;text-transform:uppercase;border:0;cursor:pointer;transition:transform .15s,background .15s}
+.btn:hover{transform:translateY(-1px);background:#b8283a}
+
+.hero{padding:56px 0 10px;text-align:center;background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(44,66,168,.35),transparent 70%)}
+.hero .logo{height:70px;margin:0 auto 34px;display:block}
+.hero h1{font-size:clamp(40px,8vw,78px);margin:14px auto 18px}
+.hero p.lead{font-size:20px;max-width:44ch;margin:0 auto;color:var(--soft)}
+.firma{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:28px}
+.firma img{width:52px;height:52px;border-radius:50%;object-fit:cover;object-position:50% 15%;border:2px solid var(--line)}
+.firma div{text-align:left;font-size:15px;color:var(--soft);line-height:1.35}
+.firma b{display:block;font-size:16px}
+
+section{padding:46px 0}
+h2.h{font-size:clamp(28px,4.6vw,42px);margin:10px 0 14px}
+.sub{font-size:18px;color:var(--soft)}
+
+/* scheda del calcolatore */
+.calc{background:var(--panel);border:1px solid var(--line);border-radius:26px;padding:28px}
+.tabs{display:flex;gap:8px;background:rgba(255,255,255,.05);padding:6px;border-radius:999px;margin-bottom:26px}
+.tabs button{flex:1;border:0;background:transparent;color:var(--soft);font-family:"Montserrat";font-weight:900;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:12px 10px;border-radius:999px;cursor:pointer}
+.tabs button.on{background:#fff;color:var(--ink)}
+.campo{margin-bottom:20px}
+.campo label{display:block;font-family:"Montserrat";font-weight:900;font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.campo .aiuto{font-size:15px;color:var(--muted);margin-top:6px}
+.campo input{width:100%;background:var(--bg);border:1px solid var(--line);color:#fff;border-radius:14px;padding:14px 16px;font-family:"Newsreader";font-size:20px}
+.campo input:focus{outline:2px solid var(--accent);border-color:transparent}
+.scelte{display:flex;flex-wrap:wrap;gap:8px}
+.scelte button{border:1px solid var(--line);background:var(--bg);color:var(--soft);border-radius:12px;padding:11px 14px;font-family:"Newsreader";font-size:16px;cursor:pointer;text-align:left}
+.scelte button.on{background:var(--ink);border-color:var(--accent);color:#fff}
+.due{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:560px){.due{grid-template-columns:1fr}.calc{padding:20px}.etich{font-size:9.5px;letter-spacing:0}.cat{font-size:12px}}
+.errore{color:#F2A3AC;font-size:16px;margin-top:6px;min-height:1.2em}
+
+/* risultato */
+.ris{display:none;margin-top:26px;border-top:1px solid var(--line);padding-top:26px;text-align:center}
+.ris.on{display:block}
+.ris .num{font-family:"Montserrat";font-weight:900;font-size:clamp(64px,14vw,110px);line-height:1}
+.ris .unita{color:var(--muted);font-size:16px;margin-top:4px}
+.ris .forbice{color:var(--soft);font-size:17px;margin-top:8px}
+.cat{display:inline-block;margin-top:18px;font-family:"Montserrat";font-weight:900;font-size:14px;letter-spacing:.1em;text-transform:uppercase;padding:9px 16px;border-radius:10px}
+.scala{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin:26px 0 8px}
+.scala div{height:12px;border-radius:6px}
+.scala .pin{position:absolute;top:-9px;width:4px;height:30px;background:#fff;border-radius:2px;transform:translateX(-50%);box-shadow:0 0 0 3px var(--bg)}
+.etich{display:grid;grid-template-columns:repeat(5,1fr);font-size:12px;color:var(--muted);font-family:"Montserrat";font-weight:900;letter-spacing:.04em;text-transform:uppercase}
+.frasi{max-width:52ch;margin:22px auto 0;font-size:18px;color:var(--soft)}
+.frasi p+p{margin-top:10px}
+.eta{margin-top:20px;background:rgba(255,255,255,.05);border-radius:16px;padding:16px;font-size:17px}
+.eta b{font-family:"Montserrat";font-weight:900;font-size:24px}
+
+.disc{font-size:15px;color:var(--muted);margin-top:22px;text-align:left;background:rgba(255,255,255,.04);border-radius:14px;padding:14px 16px}
+
+
+/* prima e dopo */
+.casi{overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-top:26px;mask-image:linear-gradient(90deg,transparent,#000 5%,#000 95%,transparent)}
+.casi::-webkit-scrollbar{display:none}
+.nastro{display:flex;gap:16px;width:max-content}
+.caso{flex:none;border-radius:18px;overflow:hidden}
+.caso img{height:300px;width:auto;display:block;background:#0B1430}
+@media (max-width:560px){.caso img{height:240px}}
+.legale{font-size:14px;color:var(--muted);margin-top:14px}
+
+/* cta */
+.cta{background:linear-gradient(135deg,#0B1428,#00225A);border:1px solid var(--line);border-radius:26px;padding:36px;display:grid;grid-template-columns:1fr 200px;gap:28px;align-items:center}
+.cta img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:18px}
+.cta p{color:var(--soft);font-size:18px;margin:10px 0 22px}
+@media (max-width:640px){.cta{grid-template-columns:1fr}.cta img{max-width:220px}}
+
+.passi{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:24px}
+.passo{border-top:2px solid var(--accent);padding-top:14px}
+.passo .n{font-family:"Montserrat";font-weight:900;font-size:34px;line-height:1}
+.passo h3{font-family:"Montserrat";font-weight:900;font-size:16px;margin:10px 0 4px}
+.passo p{font-size:16px;color:var(--soft)}
+@media (max-width:640px){.passi{grid-template-columns:1fr}}
+
+.fonti{font-size:14px;color:var(--muted)}
+.fonti li{margin:6px 0 6px 18px}
+footer{text-align:center;color:var(--muted);font-size:14px;padding:30px 0 20px}
+
+.barra-call{position:fixed;left:0;right:0;bottom:0;z-index:20;display:flex;align-items:center;justify-content:center;gap:18px;padding:12px 16px calc(12px + env(safe-area-inset-bottom));background:rgba(5,10,24,.94);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-top:1px solid var(--line)}
+.barra-call span{font-weight:600;font-size:17px}
+.barra-call .btn{padding:12px 22px;font-size:13px;white-space:nowrap}
+@media (max-width:560px){.barra-call{gap:10px;justify-content:space-between}.barra-call span{font-size:14.5px;line-height:1.25}.barra-call .btn{padding:11px 14px;font-size:11px}}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <img class="logo" src="img/logo_b.png" alt="SUPER-ALE">
+    <div class="kick">calcolatore gratuito</div>
+    <h1 class="h">quanto è grande il tuo motore?</h1>
+    <p class="lead">Stima il tuo <b>VO2 max</b> in due minuti, con i dati che hai già, usando un modello costruito su più di quattromila adulti a cui il VO2 max è stato misurato davvero in laboratorio.</p>
+    <div class="firma"><img src="img/ale_avatar.jpg" alt=""><div><b>Alessandro Passalacqua</b>Founder di SUPER-ALE</div></div>
+  </div>
+</header>
+
+<main class="wrap">
+<section>
+  <div class="calc">
+    <div class="tabs">
+      <button class="on" data-tab="hunt">Senza correre</button>
+      <button data-tab="cooper">Test dei 12 minuti</button>
+    </div>
+
+    <div class="campo">
+      <label>Sesso</label>
+      <div class="scelte" data-campo="sesso">
+        <button data-v="m" class="on">Uomo</button><button data-v="f">Donna</button>
+      </div>
+    </div>
+    <div class="campo">
+      <label for="eta">Età</label>
+      <input id="eta" type="number" inputmode="numeric" min="18" max="90" placeholder="es. 32">
+    </div>
+
+    <div id="tab-hunt">
+      <div class="due">
+        <div class="campo">
+          <label for="vita">Giro vita (cm)</label>
+          <input id="vita" type="number" inputmode="decimal" min="50" max="170" placeholder="es. 84">
+          <div class="aiuto">All'altezza dell'ombelico, in piedi, dopo aver espirato.</div>
+        </div>
+        <div class="campo">
+          <label for="fc">Battito a riposo</label>
+          <input id="fc" type="number" inputmode="numeric" min="30" max="120" placeholder="es. 62">
+          <div class="aiuto">Al mattino appena sveglio, da seduto, contando per un minuto (o dall'orologio).</div>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Quante volte fai attività fisica?</label>
+        <div class="scelte" data-campo="freq">
+          <button data-v="0">Mai, o meno di una volta a settimana</button>
+          <button data-v="1">Una volta a settimana</button>
+          <button data-v="2.5">2-3 volte a settimana</button>
+          <button data-v="5">Quasi tutti i giorni</button>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Quanto dura di solito?</label>
+        <div class="scelte" data-campo="dur">
+          <button data-v="0.1">Meno di 15 minuti</button>
+          <button data-v="0.38">15-29 minuti</button>
+          <button data-v="0.75">30 minuti - 1 ora</button>
+          <button data-v="1">Più di un'ora</button>
+        </div>
+      </div>
+      <div class="campo">
+        <label>Quanto spingi?</label>
+        <div class="scelte" data-campo="int">
+          <button data-v="1">Tranquillo, senza fiatone né sudare</button>
+          <button data-v="5">Fino al fiatone e a sudare</button>
+          <button data-v="10">Quasi allo sfinimento</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab-cooper" hidden>
+      <div class="campo">
+        <label for="metri">Metri percorsi in 12 minuti</label>
+        <input id="metri" type="number" inputmode="numeric" min="800" max="5000" placeholder="es. 2400">
+        <div class="aiuto">Su una pista o un percorso piatto: dopo un buon riscaldamento corri più che puoi per 12 minuti, a ritmo costante, e segna i metri. Fallo solo se stai bene e sei abituato a correre.</div>
+      </div>
+    </div>
+
+    <div class="errore" id="errore"></div>
+    <button class="btn" id="calcola" style="width:100%;margin-top:6px">Calcola il mio VO2 max</button>
+
+    <div class="ris" id="ris">
+      <div class="kick">il tuo vo2 max stimato</div>
+      <div class="num" id="num">—</div>
+      <div class="unita">ml di ossigeno per chilo di peso, al minuto</div>
+      <div class="forbice" id="forbice"></div>
+      <div class="cat" id="cat"></div>
+      <div class="scala" id="scala">
+        <div style="background:#C0392B"></div><div style="background:#E67E22"></div><div style="background:#F1C40F"></div><div style="background:#2ECC71"></div><div style="background:#27AE60"></div>
+        <span class="pin" id="pin"></span>
+      </div>
+      <div class="etich"><span>basso</span><span>sotto la media</span><span>nella media</span><span>sopra la media</span><span>alto</span></div>
+      <div class="eta" id="eta-fit"></div>
+      <div class="frasi" id="frasi"></div>
+      <div class="disc"><b>È una stima, non una misura.</b> Il valore vero si misura solo in laboratorio, con la maschera, su tapis roulant o bici. Il modello "senza correre" sbaglia in media di circa 5 punti in più o in meno, il test dei 12 minuti di solito un po' meno. Usalo per farti un'idea e per vedere se migliori nel tempo, sempre con lo stesso metodo. Non sostituisce una visita medica.</div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="kick">cos'è il vo2 max</div>
+  <h2 class="h">la cilindrata del tuo motore</h2>
+  <p class="sub">È la quantità massima di ossigeno che il tuo corpo riesce a usare in un minuto quando spingi al massimo. Più è alta, più reggi lo sforzo, e negli studi più grandi chi ce l'ha alto tende a stare meglio e a vivere più a lungo. La buona notizia è che si allena.</p>
+  <div class="passi">
+    <div class="passo"><div class="n">01</div><h3>costruisci la base</h3><p>Corse facili o camminate a passo sostenuto, qualche volta a settimana, 30-45 minuti, a un ritmo in cui riesci ancora a parlare.</p></div>
+    <div class="passo"><div class="n">02</div><h3>poi spingi</h3><p>Se sei già allenato, ripetute da 3-5 minuti vicino al massimo, come il 4×4: quattro minuti duri e tre di recupero, per quattro volte.</p></div>
+    <div class="passo"><div class="n">03</div><h3>ricontrolla</h3><p>Rifai la stima tra 8-12 settimane, con lo stesso metodo e alla stessa ora, e guarda se il numero sale.</p></div>
+  </div>
+</section>
+
+<section>
+  <div class="kick">i risultati</div>
+  <h2 class="h">cosa succede quando ti alleni con un piano</h2>
+  <p class="sub">Alcuni dei ragazzi che seguiamo con il team SUPER-ALE.</p>
+  <div class="casi"><div class="nastro" id="nastro"></div></div>
+  <p class="legale">Risultati individuali, ottenuti con allenamento, alimentazione e costanza. Non sono garantiti e dipendono dal punto di partenza di ognuno.</p>
+</section>
+
+<section>
+  <div class="cta">
+    <div>
+      <div class="kick">coaching 1:1</div>
+      <h2 class="h">vuoi alzarlo con un piano costruito su di te?</h2>
+      <p>Con il team SUPER-ALE costruiamo l'allenamento sul tuo punto di partenza, sulla tua settimana e sui tuoi obiettivi, e lo aggiustiamo insieme man mano che migliori.</p>
+      <a class="btn" href="https://formcoaching.super-ale.com/?utm_source=vo2max">Prenota la tua call gratuita</a>
+    </div>
+    <img src="img/ale.jpg" alt="Alessandro Passalacqua">
+  </div>
+</section>
+
+<section>
+  <div class="kick">da dove vengono i numeri</div>
+  <ul class="fonti">
+    <li>Stima senza correre: Nes BM et al., <i>Estimating VO2peak from a nonexercise prediction model: the HUNT Study, Norway</i>, Med Sci Sports Exerc, 2011.</li>
+    <li>Test dei 12 minuti: Cooper KH, <i>A means of assessing maximal oxygen intake</i>, JAMA, 1968.</li>
+    <li>Valori di riferimento per età e sesso: Loe H et al., <i>Cardio-respiratory reference data in 4631 healthy men and women 20-90 years: the HUNT 3 Fitness Study</i>, PLoS ONE, 2014.</li>
+  </ul>
+</section>
+</main>
+
+<footer>Creata da Alessandro Passalacqua · Founder di SUPER-ALE</footer>
+
+<div class="barra-call">
+  <span>Vuoi alzare il tuo VO2 max con un piano su misura?</span>
+  <a class="btn" href="https://formcoaching.super-ale.com/?utm_source=vo2max">Prenota la call gratuita</a>
+</div>
+
+<script>
+// Valori di riferimento HUNT 3 (Loe et al. 2014, tabella 4): media e deviazione standard per decade di età
+const RIF = {
+  m: [[25,54.0,8.8],[35,48.6,7.9],[45,46.6,8.0],[55,41.9,7.6],[65,38.4,6.9],[75,34.2,7.1]],
+  f: [[25,42.8,7.6],[35,39.6,7.0],[45,37.8,7.0],[55,33.7,5.7],[65,30.5,5.1],[75,26.8,5.1]]
+};
+const stato = {tab:"hunt", sesso:"m", freq:null, dur:null, int:null};
+
+document.querySelectorAll(".tabs button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".tabs button").forEach(x => x.classList.toggle("on", x === b));
+  stato.tab = b.dataset.tab;
+  document.getElementById("tab-hunt").hidden = stato.tab !== "hunt";
+  document.getElementById("tab-cooper").hidden = stato.tab !== "cooper";
+  document.getElementById("ris").classList.remove("on");
+});
+document.querySelectorAll(".scelte").forEach(g => g.querySelectorAll("button").forEach(b => b.onclick = () => {
+  g.querySelectorAll("button").forEach(x => x.classList.toggle("on", x === b));
+  stato[g.dataset.campo] = b.dataset.v;
+}));
+
+function riferimento(sesso, eta) {
+  // media e DS interpolate tra le decadi
+  const t = RIF[sesso];
+  if (eta <= t[0][0]) return t[0].slice(1);
+  if (eta >= t[t.length-1][0]) return t[t.length-1].slice(1);
+  for (let i = 0; i < t.length-1; i++) {
+    const [a,ma,sa] = t[i], [b,mb,sb] = t[i+1];
+    if (eta >= a && eta <= b) { const k = (eta-a)/(b-a); return [ma+(mb-ma)*k, sa+(sb-sa)*k]; }
+  }
+}
+function etaFitness(sesso, vo2) {
+  // l'età in cui la media della popolazione ha il tuo VO2 max
+  const t = RIF[sesso];
+  if (vo2 >= t[0][1]) return null;            // meglio della media dei 20-29enni
+  if (vo2 <= t[t.length-1][1]) return 80;
+  for (let i = 0; i < t.length-1; i++) {
+    const [a,ma] = t[i], [b,mb] = t[i+1];
+    if (vo2 <= ma && vo2 >= mb) return Math.round(a + (ma-vo2)/(ma-mb)*(b-a));
+  }
+}
+const num = id => parseFloat(String(document.getElementById(id).value).replace(",", "."));
+
+document.getElementById("calcola").onclick = () => {
+  const err = document.getElementById("errore"); err.textContent = "";
+  const eta = num("eta"), s = stato.sesso;
+  if (!(eta >= 18 && eta <= 90)) { err.textContent = "Inserisci un'età tra 18 e 90 anni."; return; }
+  let vo2, forbice;
+  if (stato.tab === "hunt") {
+    const vita = num("vita"), fc = num("fc");
+    if (!(vita >= 50 && vita <= 170)) { err.textContent = "Inserisci il giro vita in centimetri."; return; }
+    if (!(fc >= 30 && fc <= 120)) { err.textContent = "Inserisci il battito a riposo (battiti al minuto)."; return; }
+    if (stato.freq === null || stato.dur === null || stato.int === null) { err.textContent = "Rispondi alle tre domande sull'attività fisica."; return; }
+    // indice di attività HUNT: frequenza × durata × intensità
+    const pa = parseFloat(stato.freq) === 0 ? 0 : stato.freq * stato.dur * stato.int;
+    // Nes et al. 2011, modello senza esercizio (VO2peak in ml/kg/min)
+    vo2 = s === "m" ? 100.27 - 0.296*eta + 0.226*pa - 0.369*vita - 0.155*fc
+                    : 74.736 - 0.247*eta + 0.198*pa - 0.259*vita - 0.114*fc;
+    forbice = 5;
+  } else {
+    const m = num("metri");
+    if (!(m >= 800 && m <= 5000)) { err.textContent = "Inserisci i metri percorsi in 12 minuti."; return; }
+    vo2 = (m - 504.9) / 44.73;                   // Cooper 1968
+    forbice = 4;
+  }
+  vo2 = Math.max(10, vo2);
+  const [media, ds] = riferimento(s, eta);
+  const z = (vo2 - media) / ds;
+  const fasce = [
+    {max:-1,   nome:"basso",          col:"#C0392B"},
+    {max:-0.33,nome:"sotto la media", col:"#E67E22"},
+    {max:0.33, nome:"nella media",    col:"#F1C40F"},
+    {max:1,    nome:"sopra la media", col:"#2ECC71"},
+    {max:99,   nome:"alto",           col:"#27AE60"}];
+  const f = fasce.find(x => z < x.max);
+  document.getElementById("num").textContent = vo2.toFixed(1).replace(".", ",");
+  document.getElementById("forbice").textContent = `probabilmente tra ${Math.round(vo2-forbice)} e ${Math.round(vo2+forbice)}`;
+  const cat = document.getElementById("cat");
+  cat.textContent = f.nome + " per la tua età"; cat.style.background = f.col; cat.style.color = (f.nome === "nella media") ? "#050A18" : "#fff";
+  const pos = Math.min(0.98, Math.max(0.02, (z + 2) / 4));
+  document.getElementById("pin").style.left = (pos*100) + "%";
+  const ef = etaFitness(s, vo2);
+  const efTxt = ef === null ? "Il tuo motore è da <b>20 anni</b> o meno: sei sopra la media dei ventenni."
+              : ef >= 80 ? "Il tuo motore è da <b>80 anni</b> o più: è il momento giusto per iniziare a costruirlo."
+              : `Il tuo motore ha l'età media di una persona di <b>${ef} anni</b>.`;
+  document.getElementById("eta-fit").innerHTML = efTxt;
+  const media1 = media.toFixed(0);
+  let frasi = `<p>La media per ${s === "m" ? "un uomo" : "una donna"} della tua età è circa <b>${media1}</b>.</p>`;
+  if (z < -0.33) frasi += "<p>Sappi che è il punto da cui si parte meglio: chi parte più in basso è anche chi migliora più in fretta, e bastano poche settimane di corse facili o camminate a passo sostenuto per vedere il numero salire.</p>";
+  else if (z <= 1) frasi += "<p>Hai una buona base. Per salire ancora serve costruire la base aerobica in modo costante e aggiungere un po' di lavoro più intenso, con criterio.</p>";
+  else frasi += "<p>Hai un motore sopra la media. Da qui si sale con gli allenamenti vicino al massimo, dosati bene per non accumulare fatica.</p>";
+  document.getElementById("frasi").innerHTML = frasi;
+  const r = document.getElementById("ris"); r.classList.add("on"); r.scrollIntoView({behavior:"smooth", block:"start"});
+};
+
+// prima e dopo (le stesse foto della guida integratori), che scorrono da sole
+const CASI = [["dubai",900,593],["spogliatoio",900,679],["tatuaggi",900,494],["biondo2",900,581],["spiaggia",900,689]];
+(function(){
+  const html = CASI.map(([f,w,h]) => `<div class="caso"><img src="img/casi/${f}.jpg" width="${w}" height="${h}" decoding="async" alt="Prima e dopo"></div>`).join("");
+  const n = document.getElementById("nastro"); n.innerHTML = html + html;
+  const box = document.querySelector(".casi"); let x = 0, fermo = false, t;
+  const pausa = ms => { fermo = true; clearTimeout(t); x = box.scrollLeft; t = setTimeout(() => fermo = false, ms); };
+  box.addEventListener("touchstart", () => pausa(99999), {passive:true});
+  box.addEventListener("touchend", () => pausa(2500), {passive:true});
+  box.addEventListener("mouseenter", () => pausa(99999));
+  box.addEventListener("mouseleave", () => pausa(300));
+  let prima = performance.now();
+  (function passo(ora){
+    const dt = Math.min(64, ora - prima); prima = ora;
+    const meta = box.scrollWidth / 2;
+    if (!fermo && meta > box.clientWidth) { x += 0.8 * dt / 16.7; if (x >= meta) x -= meta; box.scrollLeft = x; }
+    requestAnimationFrame(passo);
+  })(prima);
+})();
+</script>
+</body>
+</html>
